@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         uses: actions/checkout@v2
-        uses: iradukunda1/andasy-action@main
+        uses: quarksgroup/andasy-action@main
         env:
           # you can use either one of these according to your need
           ANDASY_ACCESS_TOKEN: ${{ secrets.ANDASY_ACCESS_TOKEN }}
