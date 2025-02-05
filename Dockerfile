@@ -1,8 +1,11 @@
-FROM alpine
+FROM debian:stable-slim
 
-RUN apk add --no-cache curl
+RUN apt-get update && apt-get install -y curl
 
-RUN curl -L https://andasy.io/install.sh | ANDASY_INSTALL=/usr/local sh
+RUN curl -sSL https://andasy.io/install.sh | sh
+
+# Github action changes $HOME env of containers to something else. Move the binary so they can be accessible.
+RUN mv ~/.andasy/bin/andasy /bin/
 
 COPY entrypoint.sh /entrypoint.sh
 

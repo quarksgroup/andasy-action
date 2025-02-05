@@ -1,28 +1,50 @@
-#!/bin/sh -l
+#!/bin/bash -l
 
-if [ -n "$ANDASY_PROJECT_PATH" ]; then
+if ! [ -n "$ANDASY_ACCESS_TOKEN" ]; then
+  echo "ANDASY_ACCESS_TOKEN is missing."
+  echo "visit https://github.com/quarksgroup/andasy-action/blob/main/README.md#prerequisites."
+  exit 1
+fi
+
+if [ -n "$INPUT_PROJECT_PATH" ]; then
   PREV_PATH=$(pwd)
-  # Allow user to change directories in which to run Andasy commands
-  cd "$ANDASY_PROJECT_PATH" || exit
+  # Allow user to change directories in which to run Andasy commands.
+  cd "$INPUT_PROJECT_PATH" || exit
+  echo "Running deploy inside $INPUT_PROJECT_PATH"
 fi
 
+# Default to deploying with a local builder unless remote is specified explicitly.
+STRATEGY="local"
 
-# Default to deploying with a remote builder unless local is specified explicitly
-STRATEGY="-m remote"
-
-for i in "$@" ; do
-  if [[ $i == "-m local" ]] ; then
-    STRATEGY=""
-    break
+if [ -n "$INPUT_BUILD_MODE" ]; then
+  if [ "$INPUT_BUILD_MODE" = "remote" ]; then
+    echo "Using remote builder"
+    STRATEGY="remote"
   fi
-done
-
-if [[ $1 != "deploy" ]] ; then
-  # Strategy only relevant to deployments so strip if not a deploy
-  STRATEGY=""
 fi
 
-sh -c "andasy $* $STRATEGY"
+DEFAULT_DOCKER_SOCK="/var/run/docker.sock"
+
+if ! [ -S "$DEFAULT_DOCKER_SOCK" ]; then
+  if [ "$STRATEGY" = "local" ]; then
+    echo "Local docker daemon doesn't seem to be up. Fallback to remote builder."
+    STRATEGY="remote"
+  fi
+fi
+
+if ! [ -f "config.hcl" ]; then
+  echo "config.hcl with existing app name is required."
+  echo 'Generate it by running "andasy setup" inside your project.'
+  exit 1
+fi
+
+if ! [ -f "Dockerfile" ]; then
+  echo "Dockerfile of your project is required."
+  echo 'Generate it by running "andasy setup" inside your project.'
+  exit 1
+fi
+
+andasy deploy -m $STRATEGY
 
 ACTUAL_EXIT="$?"
 

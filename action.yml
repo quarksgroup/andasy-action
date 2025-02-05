@@ -1,8 +1,16 @@
 name: andasy-action
-description: The andasy command line tool used to interact with andasy platform.
+author: Andasy Developers
+description: The andasy Github action for deploying application to andasy platform.
 branding:
   icon: "upload-cloud"
   color: "purple"
+inputs:
+  build_mode:
+    description: "Build mode to use between remote, or local(Github provided docker). default to local builder."
+    default: "local"
+  project_path:
+    description: "Specify directory to deploy relative to the root of your respository. Ignore this to use root directory."
+    default: ""
 runs:
   using: "docker"
   image: "Dockerfile"
