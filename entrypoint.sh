@@ -32,10 +32,13 @@ if ! [ -S "$DEFAULT_DOCKER_SOCK" ]; then
   fi
 fi
 
-if ! [ -f "config.hcl" ]; then
-  echo "config.hcl with existing app name is required."
-  echo 'Generate it by running "andasy setup" inside your project.'
-  exit 1
+if ! [ -f "andasy.hcl" ]; then
+  # for backward compatibility
+  if ! [ -f "config.hcl" ]; then
+    echo "andasy.hcl with existing app name is required."
+    echo 'Generate it by running "andasy setup" inside your project.'
+    exit 1
+  fi
 fi
 
 if ! [ -f "Dockerfile" ]; then
