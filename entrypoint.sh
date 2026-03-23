@@ -1,4 +1,6 @@
-#!/bin/bash -l
+#!/bin/bash
+#
+set -euo pipefail
 
 if ! [ -n "$ANDASY_ACCESS_TOKEN" ]; then
   echo "ANDASY_ACCESS_TOKEN is missing."
@@ -33,7 +35,6 @@ if ! [ -S "$DEFAULT_DOCKER_SOCK" ]; then
 fi
 
 if ! [ -f "andasy.hcl" ]; then
-  # for backward compatibility
   if ! [ -f "config.hcl" ]; then
     echo "andasy.hcl with existing app name is required."
     echo 'Generate it by running "andasy setup" inside your project.'
@@ -47,9 +48,9 @@ if ! [ -f "Dockerfile" ]; then
   exit 1
 fi
 
-andasy deploy -m $STRATEGY
+andasy deploy -m "$STRATEGY"
 
-ACTUAL_EXIT="$?"
+ACTUAL_EXIT=$?
 
 if [ -n "$PREV_PATH" ]; then
   # If we changed directories before, we should go back to where we were.

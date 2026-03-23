@@ -1,15 +1,15 @@
 name: andasy-action
-author: Andasy Developers
+author: Andasy Labs
 description: The andasy Github action for deploying application to andasy platform.
 branding:
   icon: "upload-cloud"
   color: "purple"
 inputs:
   build_mode:
-    description: "Build mode to use between remote, or local(Github provided docker). default to local builder."
+    description: "Build mode to use between remote, or local (Docker runtime in Github Actions)"
     default: "local"
   project_path:
-    description: "Specify directory to deploy relative to the root of your respository. Ignore this to use root directory."
+    description: "Specify a directory to deploy relative to the root of your respository. root directory used by default."
     default: ""
 runs:
   using: "docker"
