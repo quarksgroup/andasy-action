@@ -2,6 +2,8 @@
 #
 set -euo pipefail
 
+export DOCKER_BUILDKIT=1
+
 if ! [ -n "$ANDASY_ACCESS_TOKEN" ]; then
   echo "ANDASY_ACCESS_TOKEN is missing."
   echo "visit https://github.com/quarksgroup/andasy-action/blob/main/README.md#prerequisites."
