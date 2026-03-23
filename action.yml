@@ -14,7 +14,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: ./setup
+    - uses: quarksgroup/andasy-action/setup@main
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v4
