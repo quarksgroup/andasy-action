@@ -28,6 +28,7 @@ runs:
           exit 1
         fi
         rm "$log"
+        echo "$HOME/.andasy/bin" >> $GITHUB_PATH
 
     - name: Deploy to Andasy
       shell: bash
