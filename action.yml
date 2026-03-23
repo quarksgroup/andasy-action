@@ -14,12 +14,20 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Setup andasy CLI
-      shell: bash
-      run: set -x && curl -sSL https://andasy.io/install.sh | sh
-
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v4
+
+    - name: Setup andasy CLI
+      shell: bash
+      run: |
+        set -euo pipefail
+        log=$(mktemp)
+        if ! curl -sSL https://andasy.io/install.sh 2>&1 | sh > "$log" 2>&1; then
+          echo "Andasy CLI install failed. Install output:"
+          cat "$log"
+          exit 1
+        fi
+        rm "$log"
 
     - name: Deploy to Andasy
       shell: bash
