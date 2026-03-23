@@ -12,5 +12,75 @@ inputs:
     description: "Specify a directory to deploy relative to the root of your respository. root directory used by default."
     default: ""
 runs:
-  using: "docker"
-  image: "Dockerfile"
+  using: "composite"
+  steps:
+    - name: Install andasy CLI
+      shell: bash
+      run: |
+        curl -sSL https://andasy.io/install.sh | sh
+        echo "$HOME/.andasy/bin" >> $GITHUB_PATH
+
+    - name: Deploy to Andasy
+      shell: bash
+      env:
+        ANDASY_ACCESS_TOKEN: ${{ env.ANDASY_ACCESS_TOKEN }}
+        INPUT_BUILD_MODE: ${{ inputs.build_mode }}
+        INPUT_PROJECT_PATH: ${{ inputs.project_path }}
+      run: |
+        set -euo pipefail
+
+        export DOCKER_BUILDKIT=1
+
+        if ! [ -n "$ANDASY_ACCESS_TOKEN" ]; then
+          echo "ANDASY_ACCESS_TOKEN is missing."
+          echo "visit https://github.com/quarksgroup/andasy-action/blob/main/README.md#prerequisites."
+          exit 1
+        fi
+
+        if [ -n "$INPUT_PROJECT_PATH" ]; then
+          PREV_PATH=$(pwd)
+          cd "$INPUT_PROJECT_PATH"
+          echo "Running deploy inside $INPUT_PROJECT_PATH"
+        fi
+
+        STRATEGY="local"
+
+        if [ -n "$INPUT_BUILD_MODE" ]; then
+          if [ "$INPUT_BUILD_MODE" = "remote" ]; then
+            echo "Using remote builder"
+            STRATEGY="remote"
+          fi
+        fi
+
+        DEFAULT_DOCKER_SOCK="/var/run/docker.sock"
+
+        if ! [ -S "$DEFAULT_DOCKER_SOCK" ]; then
+          if [ "$STRATEGY" = "local" ]; then
+            echo "Local docker daemon doesn't seem to be up. Fallback to remote builder."
+            STRATEGY="remote"
+          fi
+        fi
+
+        if ! [ -f "andasy.hcl" ]; then
+          if ! [ -f "config.hcl" ]; then
+            echo "andasy.hcl with existing app name is required."
+            echo 'Generate it by running "andasy setup" inside your project.'
+            exit 1
+          fi
+        fi
+
+        if ! [ -f "Dockerfile" ]; then
+          echo "Dockerfile of your project is required."
+          echo 'Generate it by running "andasy setup" inside your project.'
+          exit 1
+        fi
+
+        andasy deploy -m "$STRATEGY"
+
+        ACTUAL_EXIT=$?
+
+        if [ -n "$PREV_PATH" ]; then
+          cd "$PREV_PATH"
+        fi
+
+        exit $ACTUAL_EXIT
