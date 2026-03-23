@@ -16,7 +16,7 @@ runs:
   steps:
     - name: Setup andasy CLI
       shell: bash
-      run: curl -sSL https://andasy.io/install.sh | sh
+      run: set -x && curl -sSL https://andasy.io/install.sh | sh
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v4
