@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl \
 RUN --mount=type=cache,target=/tmp \
     curl -sSL https://andasy.io/install.sh | sh
 
-RUN mv ~/.andasy/bin/andasy /bin/
+RUN mv /root/.andasy/bin/andasy /bin/
 
 COPY entrypoint.sh /entrypoint.sh
 

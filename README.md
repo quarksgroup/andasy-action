@@ -48,7 +48,7 @@ jobs:
     name: Deploy App
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@v6
         - uses: quarksgroup/andasy-action@main
           env:
           # Set access token
