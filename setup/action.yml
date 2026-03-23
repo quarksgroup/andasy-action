@@ -1,0 +1,11 @@
+name: "Setup Andasy CLI"
+description: "Install and configure the Andasy CLI for GitHub Actions"
+author: "Andasy Labs"
+inputs:
+  version:
+    description: "Version of andasy CLI to install (defaults to latest)"
+    default: ""
+runs:
+  using: "node20"
+  main: "dist/index.js"
+  post: "dist/index.js"

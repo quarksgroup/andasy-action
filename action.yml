@@ -14,11 +14,10 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Install andasy CLI
-      shell: bash
-      run: |
-        curl -sSL https://andasy.io/install.sh | sh
-        echo "$HOME/.andasy/bin" >> $GITHUB_PATH
+    - uses: ./setup
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v4
 
     - name: Deploy to Andasy
       shell: bash
